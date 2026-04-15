@@ -1,6 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,8 +13,18 @@ async function bootstrap() {
     transform: true,
     disableErrorMessages: false,
   }));
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+  const config = new DocumentBuilder()
+    .setTitle('Wited Task API')
+    .setDescription('API para la gestión de tareas con autenticación JWT y caché en Redis')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+    
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableShutdownHooks();
 
   await app.listen(process.env.APP_PORT || 3000, '0.0.0.0');
