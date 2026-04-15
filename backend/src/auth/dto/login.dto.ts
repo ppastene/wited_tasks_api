@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+/*import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class LoginDto {
   @IsEmail({}, {message: "email is not a valid email"})
@@ -8,3 +8,7 @@ export class LoginDto {
   @MinLength(6, { message: "password must be 6 characters long" })
   password: string;
 }
+  */
+import { RegisterDto } from './register.dto';
+
+export class LoginDto extends RegisterDto {}
