@@ -1,0 +1,52 @@
+services:
+  database:
+    image: postgres:18.3-alpine
+    container_name: wited_db
+    restart: always
+    environment:
+      POSTGRES_USER: wited_user
+      POSTGRES_PASSWORD: wited_password
+      POSTGRES_DB: wited_db
+    ports:
+      - "5432:5432"
+    networks:
+      - wited_network
+
+  cache:
+    image: redis:8.6.2-alpine
+    container_name: wited_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - wited_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wited-api:1.0
+    container_name: wited_api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+      - cache
+    networks:
+      - wited_network
+    environment:
+      APP_HOST: 0.0.0.0
+      APP_PORT: 3000
+      APP_SECRET: some-random-value
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USERNAME: wited_user
+      DB_PASSWORD: wited_password
+      DB_NAME: wited_db
+      DB_SYNC: false
+      CACHE_HOST: cache
+      CACHE_PORT: 6379
+
+networks:
+  wited_network:
+    driver: bridge
