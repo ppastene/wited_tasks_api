@@ -1,6 +1,6 @@
 # Task API
 Proyecto solicitado por Wited a modo de prueba tecnica.
-## Tecnoloías utilizadas
+## Tecnologías utilizadas
 | Servicio      | Versión   | Stack            |
 |---------------|-----------|------------------|
 | NodeJS        | v20       | Motor Javascript |
