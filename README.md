@@ -25,10 +25,10 @@ A continuación se describe los pasos para correr ambas instancias:
 ### Docker
 1. Asegurate de que Docker y Docker Compose estén corriendo en tu entorno usando los comandos ```docker -v``` y ```docker compose version```.
 2. Clona este proyecto con ```git clone```.
-3. Para correr la instancia en modo desarrollo ejecuta ```docker compose -f docker-compose-dev.yml up```. Si necesitas sincronizar los cambios entre tu entorno y el contenedor corre la instancia con ```docker compose -f docker-compose-dev.yml watch```. Si tras detener el contenedor necesitas reconstruir el contenedor usa la opcion ```--build```.
+3. Para correr la instancia en modo desarrollo ejecuta ```docker compose -f docker-compose-dev.yml up```. Si necesitas sincronizar los cambios entre tu entorno y el contenedor corre la instancia con ```docker compose -f docker-compose-dev.yml watch```. Si tras detener el contenedor necesitas volver a construir ejecuta el comando junto a la opcion ```--build```.
 4. Para correr en producción ejecuta ```docker compose -f docker-compose.yml up``` o ```docker compose up```
 
 Nota: Si usas docker compose no es necesario que configures las variables de entorno ya que estan configuradas en el archivo yml.
 
 ## Documentación
-Para ver la documentación de la API consulte la documentación usando la ruta ```/docs```.
+Para ver la documentación de la API consulte la documentación usando la ruta ```/docs``` una vez que tengas el servicio corriendo.
