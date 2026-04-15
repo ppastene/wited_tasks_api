@@ -1,5 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -27,6 +28,10 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableShutdownHooks();
 
-  await app.listen(process.env.APP_PORT || 3000, '0.0.0.0');
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('app.port');
+  const host = configService.get<string>('app.host');
+
+  await app.listen(port, host);
 }
 bootstrap();
