@@ -27,3 +27,6 @@ A continuación se describe los pasos para correr ambas instancias:
 4. Para correr en producción ejecuta ```docker compose -f docker-compose.yml up``` o ```docker compose up```
 
 Nota: Si usas docker compose no es necesario que configures las variables de entorno ya que estan configuradas en el archivo yml.
+
+## Documentación
+Para ver la documentación de la API consulte la documentación usando la ruta ```/docs```.
