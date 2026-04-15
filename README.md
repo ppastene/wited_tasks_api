@@ -14,16 +14,16 @@ Este proyecto puede funcionar de manera independiente si ya tienes los servicios
 A continuación se describe los pasos para correr ambas instancias:
 
 ### Standalone
-1. Clona este proyecto con git clone y entra a la carpeta backend/
-2. Ejecuta npm i para instalar las dependencias de NodeJS
-3. Copia el archivo .env.example y renombralo a .env. Luego edita el archivo .env y configura las variables de entorno
-4. Para correr en modo desarrollo ejecuta npm run start o npm run start:dev para el modo watch. 
-5. Para correr en producción ejecuta npm run build y luego npm run start:prod.
+1. Clona este proyecto con ```git clone``` y entra a la carpeta backend/
+2. Ejecuta ```npm i``` para instalar las dependencias de NodeJS.
+3. Copia el archivo ```.env.example``` y renombralo a ```.env```. Luego edita el archivo ```.env``` y configura las variables de entorno.
+4. Para correr en modo desarrollo ejecuta ```npm run start``` o ```npm run start:dev``` para el modo watch. 
+5. Para correr en producción ejecuta ```npm run build``` y luego ```npm run start:prod```.
 
 ### Docker
-1. Asegurate de que Docker y Docker Compose estén corriendo en tu entorno usando los comandos docker -v y docker compose version.
-2. Clona este proyecto con git clone
-3. Para correr la instancia en modo desarrollo ejecuta docker compose -f docker-compose-dev.yml up. Si necesitas sincronizar los cambios entre tu entorno y el contenedor corre la instancia con docker compose -f docker-compose-dev.yml watch. Si tras detener el contenedor necesitas reconstruir el contenedor usa la opcion --build.
-4. Para correr en producción ejecuta docker compose -f docker-compose.yml up o docker compose up
+1. Asegurate de que Docker y Docker Compose estén corriendo en tu entorno usando los comandos ```docker -v``` y ```docker compose version```.
+2. Clona este proyecto con ```git clone```.
+3. Para correr la instancia en modo desarrollo ejecuta ```docker compose -f docker-compose-dev.yml up```. Si necesitas sincronizar los cambios entre tu entorno y el contenedor corre la instancia con ```docker compose -f docker-compose-dev.yml watch```. Si tras detener el contenedor necesitas reconstruir el contenedor usa la opcion ```--build```.
+4. Para correr en producción ejecuta ```docker compose -f docker-compose.yml up``` o ```docker compose up```
 
 Nota: Si usas docker compose no es necesario que configures las variables de entorno ya que estan configuradas en el archivo yml.
