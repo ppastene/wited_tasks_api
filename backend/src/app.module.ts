@@ -8,6 +8,7 @@ import { User } from './users/users.entity';
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { LoggerModule } from 'nestjs-pino';
 import environment from './config/environment';
 
 
@@ -42,6 +43,18 @@ import environment from './config/environment';
           ],
           ttl: 600000,
         };
+      },
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        autoLogging: false,
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            singleLine: true,
+          },
+        },
       },
     }),
     AuthModule,

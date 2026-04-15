@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,6 +15,8 @@ export class TasksService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ){}
 
+    private readonly logger = new Logger(TasksService.name);
+
     private getCacheKey(userId: number): string {
         return `user:${userId}:tasks`;
     }
@@ -23,16 +25,19 @@ export class TasksService {
         const { page, limit } = pagination;
         const cacheKey = this.getCacheKey(Number(userId));
 
-        // Obtenemos la cache
+        this.logger.log({ userId, page, limit }, 'Iniciando búsqueda de tareas');
         let tasks = await this.cacheManager.get<Task[]>(cacheKey);
         
-        // Si no hay, buscamos en la DB
         if (!tasks) {
+            this.logger.log({ userId, cacheKey }, 'Cache miss: Recuperando tareas desde la base de datos');
             tasks = await this.taskRepository.find({ where: { user: { id: userId } }});
             await this.cacheManager.set(cacheKey, tasks); 
         }
+        else {
+            this.logger.log({ userId, cacheKey }, 'Cache hit: Tareas recuperadas desde Redis');
+        }
 
-        if (!page || !limit) {
+        if ( (!page || !limit) || tasks.length == 0 ) {
             return {
                 items: tasks,
                 meta: {
@@ -45,7 +50,6 @@ export class TasksService {
             };
         }
 
-        // PAGINACION
         const totalItems = tasks.length;
         const items = tasks.slice((page - 1) * limit, page * limit);
 
@@ -76,6 +80,7 @@ export class TasksService {
     }
 
     async createTask(dto: CreateTaskDto, userId: number): Promise<Task> {
+        this.logger.log({ userId, title: dto.title }, 'Creando nueva tarea');
         const task = this.taskRepository.create({
             ...dto,
             user: { id: userId }
@@ -83,10 +88,13 @@ export class TasksService {
         
         const savedTask = await this.taskRepository.save(task);
         await this.cacheManager.del(this.getCacheKey(userId));
+        this.logger.log({ userId, taskId: savedTask.id }, 'Tarea creada e invalidación de cache exitosa');
+
         return savedTask;
     }
 
     async editTask(taskId: number, dto: Partial<UpdateTaskDto>, userId: number): Promise<Task> {
+        this.logger.log({ userId, taskId }, 'Editando tarea');
         const task = await this.taskRepository.findOne({
             where: { 
                 id: taskId, 
@@ -94,22 +102,28 @@ export class TasksService {
             }
         });
         if (!task) {
+            this.logger.warn({ userId, taskId }, 'Intento de edición fallido: Tarea no encontrada');
             throw new NotFoundException(`Task #${taskId} not found`);
         }
         const updatedTask = this.taskRepository.merge(task, dto);
         await this.cacheManager.del(this.getCacheKey(userId));
+        this.logger.log({ userId, taskId }, 'Tarea editada e invalidación de cache exitosa');
+
         return this.taskRepository.save(updatedTask);
     }
 
     async deleteTask(taskId: number, userId: number): Promise<void> {
+        this.logger.log({ userId, taskId }, 'Eliminando tarea');
         const result = await this.taskRepository.delete({
             id: taskId,
             user: { id: userId }
         });
 
         if (result.affected === 0) {
+            this.logger.warn({ userId, taskId }, 'Intento de eliminación fallido: Tarea no encontrada');
             throw new NotFoundException(`Task #${taskId} not found`);
         }
         await this.cacheManager.del(this.getCacheKey(userId));
+        this.logger.log({ userId, taskId }, 'Tarea eliminada e invalidación de cache exitosa');
     }
 }
