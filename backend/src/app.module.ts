@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
-import { AppController } from './app.controller';
 import { createKeyv } from '@keyv/redis';
-import { AppService } from './app.service';
 import { Task } from './tasks/tasks.entity';
 import { User } from './users/users.entity';
 import { TasksModule } from './tasks/tasks.module';
@@ -50,7 +48,7 @@ import environment from './config/environment';
     TasksModule,
     UsersModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
