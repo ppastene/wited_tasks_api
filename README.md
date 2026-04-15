@@ -1,5 +1,6 @@
 # Task API
 Proyecto solicitado por Wited a modo de prueba tecnica.
+
 ## Tecnologías utilizadas
 | Servicio      | Versión   | Stack            |
 |---------------|-----------|------------------|
@@ -8,6 +9,7 @@ Proyecto solicitado por Wited a modo de prueba tecnica.
 | PostgreSQL    | v18.3     | Base de datos    |
 | Redis         | v8.6.2    | Cache            |
 | Docker        | v29.4.0   | Virtualización   |
+
 ## Como correr este proyecto
 Este proyecto puede funcionar de manera independiente si ya tienes los servicios de PostgreSQL y Redis corriendo además de tener NodeJS instalado para compilar de Typescript a Javascript. Está tambien la posibilidad de correr este proyecto con Docker ya que se provee de un Dockefile y un docker-compose.yml con todos los servicios y variables de entorno listo para correr.
 
