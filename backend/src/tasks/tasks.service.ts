@@ -4,11 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 import { Task } from './tasks.entity';
 
 @Injectable()
 export class TasksService {
-    //private readonly TASKS_CACHE_KEY = 'tasks_cache_key';
     constructor(
         @InjectRepository(Task)
         private readonly taskRepository: Repository<Task>,
@@ -19,25 +19,46 @@ export class TasksService {
         return `user:${userId}:tasks`;
     }
 
-    async findAllTasks(userId: number) {
-        /*
-        return this.taskRepository.find({
-            where: { user: { id: userId } }
-        });
-        */
-        //console.log("consultando findAll")
-        const key = this.getCacheKey(Number(userId));
-        const cachedTasks = await this.cacheManager.get<Task[]>(key);
-        if (cachedTasks) {
-            return cachedTasks;
+    async findAllTasks(userId: number, pagination: PaginationQueryDto) {
+        const { page, limit } = pagination;
+        const cacheKey = this.getCacheKey(Number(userId));
+
+        // Obtenemos la cache
+        let tasks = await this.cacheManager.get<Task[]>(cacheKey);
+        
+        // Si no hay, buscamos en la DB
+        if (!tasks) {
+            tasks = await this.taskRepository.find({ where: { user: { id: userId } }});
+            await this.cacheManager.set(cacheKey, tasks); 
         }
 
-        const tasks = await this.taskRepository.find({
-            where: { user: { id: userId } },
-        });
-        await this.cacheManager.set(key, tasks); 
+        if (!page || !limit) {
+            return {
+                items: tasks,
+                meta: {
+                    totalItems: tasks.length,
+                    itemCount: tasks.length,
+                    itemsPerPage: tasks.length,
+                    totalPages: 1,
+                    currentPage: 1,
+                },
+            };
+        }
 
-        return tasks;
+        // PAGINACION
+        const totalItems = tasks.length;
+        const items = tasks.slice((page - 1) * limit, page * limit);
+
+        return {
+            items,
+            meta: {
+                totalItems,
+                itemCount: items.length,
+                itemsPerPage: limit,
+                totalPages: Math.ceil(totalItems / limit),
+                currentPage: page,
+            },
+        };
     }
 
     async findTask(taskId: number, userId: number): Promise<Task> {
